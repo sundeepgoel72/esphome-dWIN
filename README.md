@@ -49,17 +49,11 @@ Actions:
 - `display.dwin.set_page`
 - `display.dwin.set_brightness`
 
-C++ helpers:
+## Simulation and test harnesses
 
-- `set_word(vp, value)`
-- `set_words(vp, values)`
-- `set_bytes(vp, payload)`
-- `set_text(vp, text, field_len)`
-- `request_words(vp, word_count)`
-- `set_page(page)`
-- `set_brightness(brightness)`
-- `write_register(address, payload)`
-- `read_register(address, byte_count)`
+- Windows simulator: `tools/dwin_simulator.py`
+- Frame generator: `tools/dwin_frame_cli.py`
+- Windows simulation notes: `docs/windows-simulation.md`
 
 ## Notes for testing
 
@@ -81,6 +75,8 @@ DWIN/DGUS panels are driven by the VP map compiled into the HMI project. Before 
 - [x] Add queueing and command spacing
 - [x] Add parser state machine
 - [x] Add register and VP command constants
+- [x] Add Windows protocol simulator
+- [x] Add manual frame generator
 - [ ] Run ESPHome lint/CI locally
 - [ ] Validate against real DWIN hardware
 - [ ] Add binary_sensor/sensor/text_sensor platforms if maintainers prefer entity abstractions over raw VP callbacks
