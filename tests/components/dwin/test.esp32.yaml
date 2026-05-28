@@ -1,0 +1,38 @@
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+
+uart:
+  id: dwin_uart
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 115200
+
+display:
+  - platform: dwin
+    id: dwin_display
+    update_interval: 1s
+    lambda: |-
+      it.set_text(0x1000, "ESPHome", 16);
+      it.set_word(0x1100, 42);
+    on_vp_data:
+      then:
+        - lambda: |-
+            ESP_LOGI("dwin", "VP 0x%04X words=%u", vp, data.size());
+
+button:
+  - platform: template
+    name: DWIN Page 1
+    on_press:
+      - display.dwin.write_word:
+          id: dwin_display
+          address: 0x0084
+          value: 1
+      - display.dwin.write_text:
+          id: dwin_display
+          address: 0x1000
+          text: "Hello"
+          length: 16
