@@ -1,11 +1,88 @@
-# ESPHome [![Discord Chat](https://img.shields.io/discord/429907082951524364.svg)](https://discord.gg/KhAMKrd) [![GitHub release](https://img.shields.io/github/release/esphome/esphome.svg)](https://GitHub.com/esphome/esphome/releases/)
+# ESPHome DWIN work branch
 
-[![ESPHome Logo](https://esphome.io/_images/logo-text.png)](https://esphome.io/)
+This fork is being shaped as an upstreamable ESPHome PR for DWIN DGUS/T5L HMI displays.
 
-**Documentation:** https://esphome.io/
+The implementation lives in the normal ESPHome tree:
 
-For issues, please go to [the issue tracker](https://github.com/esphome/issues/issues).
+- `esphome/components/dwin/`
+- `tests/components/dwin/`
+- `docs/components/display/dwin.rst`
 
-For feature requests, please see [feature requests](https://github.com/esphome/feature-requests/issues).
+## Implemented protocol coverage
 
-[![ESPHome - A project from the Open Home Foundation](https://www.openhomefoundation.org/badges/esphome.png)](https://www.openhomefoundation.org/)
+The component implements the common DGUS serial frame structure:
+
+```text
+5A A5 LEN CMD PAYLOAD...
+```
+
+Where `LEN` is the number of bytes after the length byte, including `CMD`.
+
+Current command coverage:
+
+| Command | Meaning | Status |
+|---|---|---|
+| `0x80` | Write register | Low-level C++ helper |
+| `0x81` | Read/register response | Parser callback |
+| `0x82` | Write VP | Actions + C++ helpers |
+| `0x83` | Read VP / VP response | Action + parser callback |
+
+## Implemented ESPHome surface
+
+Configuration:
+
+- `brightness`
+- `brightness_address`
+- `page_address`
+- `command_spacing`
+- `max_queue_size`
+- `on_vp_data`
+- `on_register_data`
+- `on_buffer_overflow`
+- `lambda`
+
+Actions:
+
+- `display.dwin.write_word`
+- `display.dwin.write_text`
+- `display.dwin.read_vp`
+- `display.dwin.set_page`
+- `display.dwin.set_brightness`
+
+C++ helpers:
+
+- `set_word(vp, value)`
+- `set_words(vp, values)`
+- `set_bytes(vp, payload)`
+- `set_text(vp, text, field_len)`
+- `request_words(vp, word_count)`
+- `set_page(page)`
+- `set_brightness(brightness)`
+- `write_register(address, payload)`
+- `read_register(address, byte_count)`
+
+## Notes for testing
+
+DWIN/DGUS panels are driven by the VP map compiled into the HMI project. Before a PR is opened upstream, the component needs validation against a real DGUS project with known VP addresses for:
+
+- text display
+- numeric display
+- touch key return
+- page switching
+- brightness
+- VP readback
+
+## Upstream PR checklist
+
+- [x] Keep ESPHome fork layout
+- [x] Add component under `esphome/components/dwin`
+- [x] Add ESPHome compile test YAML
+- [x] Add docs skeleton
+- [x] Add queueing and command spacing
+- [x] Add parser state machine
+- [x] Add register and VP command constants
+- [ ] Run ESPHome lint/CI locally
+- [ ] Validate against real DWIN hardware
+- [ ] Add binary_sensor/sensor/text_sensor platforms if maintainers prefer entity abstractions over raw VP callbacks
+- [ ] Add documentation images/links if requested
+- [ ] Open PR against `esphome/esphome:dev`
