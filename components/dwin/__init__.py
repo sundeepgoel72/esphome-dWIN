@@ -5,5 +5,5 @@ CODEOWNERS = ["@sundeepgoel72"]
 DEPENDENCIES = ["uart"]
 
 dwin_ns = cg.esphome_ns.namespace("dwin")
-DWIN = dwin_ns.class_("DWIN", cg.PollingComponent, uart.UARTDevice, display.DisplayBuffer)
+DWIN = dwin_ns.class_("DWIN", display.Display, uart.UARTDevice)
 dwin_ref = DWIN.operator("ref")
