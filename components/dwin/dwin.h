@@ -3,7 +3,6 @@
 #include "dwin_protocol.h"
 #include "esphome/components/display/display.h"
 #include "esphome/components/uart/uart.h"
-#include "esphome/core/component.h"
 
 #include <deque>
 #include <vector>
@@ -19,7 +18,7 @@ struct DWINCommand {
   std::vector<uint8_t> payload;
 };
 
-class DWIN : public PollingComponent, public uart::UARTDevice, public display::DisplayBuffer {
+class DWIN : public display::Display, public uart::UARTDevice {
  public:
   void setup() override;
   void loop() override;
@@ -44,7 +43,10 @@ class DWIN : public PollingComponent, public uart::UARTDevice, public display::D
   void request_words(uint16_t vp, uint8_t word_count);
 
  protected:
-  void draw_absolute_pixel_internal(int x, int y, Color color) override {}
+  void draw_pixel_at(int x, int y, Color color) override {}
+  int get_width_internal() override { return 0; }
+  int get_height_internal() override { return 0; }
+
   void queue_command_(uint8_t command, uint16_t address, const std::vector<uint8_t> &payload);
   void flush_next_command_();
   void send_frame_(const DWINCommand &command);
